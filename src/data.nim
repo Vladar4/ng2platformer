@@ -3,6 +3,7 @@ import
     assets,
     audio,
     font,
+    mosaic,
     scene,
     texturegraphic,
     truetypefont,
@@ -21,6 +22,8 @@ var
   defaultFont*, bigFont*: TrueTypeFont
   gfxData*: Assets[TextureGraphic]
   sfxData*: Assets[Sound]
+  buttonMosaic*: Mosaic
+  buttonSkin*: TextureGraphic
   score*: int
 
 
@@ -40,6 +43,11 @@ proc loadData*() =
     "data/sfx",
     proc(file: string): Sound = newSound(file))
 
+  buttonMosaic = newMosaic("data/gui/button.png", (8, 8))
+  buttonSkin = newTextureGraphic()
+  discard buttonSkin.assignTexture buttonMosaic.render(
+    patternStretchBorder(8, 2))
+
 
 proc freeData*() =
   defaultFont.free()
@@ -48,4 +56,6 @@ proc freeData*() =
     graphic.free()
   for sound in sfxData.values:
     sound.free()
+  buttonSkin.free()
+  buttonMosaic.free()
 
