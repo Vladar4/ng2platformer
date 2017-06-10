@@ -20,34 +20,49 @@ type
   TitleScene = ref object of Scene
 
 
+# Play action procedure
 proc play(widget: GuiWidget) =
   game.scene = mainScene
 
 
+# Exit action procedure
 proc exit(widget: GuiWidget) =
   gameRunning = false
 
 
 proc init*(scene: TitleScene) =
   init Scene(scene)
+
+  # Create menu buttons
   var
     btnPlay, btnExit: GuiButton
     btnPlayLabel, btnExitLabel: TextGraphic
+
+  # Play button
   btnPlayLabel = newTextGraphic defaultFont
   btnPlayLabel.setText "PLAY"
   btnPlay = newGuiButton(buttonSkin, btnPlayLabel)
   btnPlay.centrify()
   btnPlay.pos = (GameWidth / 2, GameHeight / 2)
-  btnPlay.action = play
+  btnPlay.action = play # assign the action procedure
   scene.add btnPlay
 
+  # Exit button
   btnExitLabel = newTextGraphic defaultFont
   btnExitLabel.setText "EXIT"
   btnExit = newGuiButton(buttonSkin, btnExitLabel)
   btnExit.centrify()
   btnExit.pos = (GameWidth / 2, GameHeight / 2 + 64)
-  btnExit.action = exit
+  btnExit.action = exit # assign the action procedure
   scene.add btnExit
+
+  let titleText = newTextGraphic bigFont
+  titleText.setText GameTitle
+  let title = newEntity()
+  title.graphic = titleText
+  title.centrify()
+  title.pos = (GameWidth / 2, GameHeight / 3)
+  scene.add title
 
 
 proc free*(scene: TitleScene) =
