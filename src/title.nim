@@ -44,7 +44,7 @@ proc init*(scene: TitleScene) =
   btnPlay = newGuiButton(buttonSkin, btnPlayLabel)
   btnPlay.centrify()
   btnPlay.pos = (GameWidth / 2, GameHeight / 2)
-  btnPlay.action = play # assign the action procedure
+  btnPlay.actions.add play # assign the action procedure
   scene.add btnPlay
 
   # Exit button
@@ -53,9 +53,10 @@ proc init*(scene: TitleScene) =
   btnExit = newGuiButton(buttonSkin, btnExitLabel)
   btnExit.centrify()
   btnExit.pos = (GameWidth / 2, GameHeight / 2 + 64)
-  btnExit.action = exit # assign the action procedure
+  btnExit.actions.add exit # assign the action procedure
   scene.add btnExit
 
+  # Title text
   let titleText = newTextGraphic bigFont
   titleText.setText GameTitle
   let title = newEntity()
