@@ -8,6 +8,7 @@ import
     nimgame,
     scene,
     textgraphic,
+    tilemap,
     types,
   ],
   data,
@@ -19,6 +20,8 @@ const
   LevelLayer = 0
   PlayerLayer = 10
 
+  MapPlayerSpawn = 8
+
 
 type
   MainScene = ref object of Scene
@@ -29,6 +32,9 @@ type
 proc init*(scene: MainScene) =
   init Scene scene
 
+  scene.camera = newEntity()
+  scene.cameraBondOffset = game.size / 2
+
   scene.level = newLevel gfxData["tiles"]
   scene.level.load "data/csv/map1.csv"
   scene.level.layer = LevelLayer
@@ -36,7 +42,11 @@ proc init*(scene: MainScene) =
 
   scene.player = newPlayer(gfxData["player"], scene.level)
   scene.player.layer = PlayerLayer
+  scene.player.pos = scene.level.tilePos scene.level.firstTileIndex(MapPlayerSpawn)
   scene.add scene.player
+
+  scene.cameraBond = scene.player
+
 
 
 proc free*(scene: MainScene) =
