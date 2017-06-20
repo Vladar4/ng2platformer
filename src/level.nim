@@ -29,5 +29,6 @@ proc load*(level: Level, csv: string) =
   level.map = loadCSV[int](
     csv,
     proc(input: string): int = discard parseInt(input, result))
-  level.hidden.add @[8, 9, 10, 11]
+
+  level.hidden.add @[8, 9, 10, 11]  # tiles on a third row are invisible markers
 
