@@ -11,11 +11,21 @@ import
 
 const
   Framerate = 1/12
+  VisibilityDim: Dim = (w: 9, h: 6)
 
 
 type
   Player* = ref object of Entity
     level*: Level
+
+
+proc updateVisibility*(player: Player) =
+  let
+    center = player.level.tileIndex(player.pos)
+  player.level.show = (
+    x: (center.x - VisibilityDim.w)..(center.x + VisibilityDim.w),
+    y: (center.y - VisibilityDim.h)..(center.y + VisibilityDim.h))
+  echo center
 
 
 proc init*(player: Player, graphic: TextureGraphic, level: Level) =
