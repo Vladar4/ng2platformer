@@ -25,7 +25,6 @@ proc updateVisibility*(player: Player) =
   player.level.show = (
     x: (center.x - VisibilityDim.w)..(center.x + VisibilityDim.w),
     y: (center.y - VisibilityDim.h)..(center.y + VisibilityDim.h))
-  echo center
 
 
 proc init*(player: Player, graphic: TextureGraphic, level: Level) =
