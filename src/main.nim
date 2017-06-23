@@ -7,6 +7,7 @@ import
     gui/widget,
     nimgame,
     scene,
+    settings,
     textgraphic,
     tilemap,
     types,
@@ -58,4 +59,12 @@ proc free*(scene: MainScene) =
 proc newMainScene*(): MainScene =
   new result, free
   init result
+
+
+method event*(scene: MainScene, event: Event) =
+  if event.kind == KeyDown:
+    case event.key.keysym.sym:
+    of K_F10:
+      colliderOutline = not colliderOutline
+    else: discard
 

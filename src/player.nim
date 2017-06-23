@@ -10,6 +10,8 @@ import
 
 
 const
+  PlayerRadius = 16
+  PlayerSize = PlayerRadius * 2
   Framerate = 1/12
   VisibilityDim: Dim = (w: 9, h: 6)
 
@@ -31,10 +33,13 @@ proc init*(player: Player, graphic: TextureGraphic, level: Level) =
   player.initEntity()
   player.level = level
   player.graphic = graphic
-  player.initSprite((32, 32))
+  player.initSprite((PlayerSize, PlayerSize))
   discard player.addAnimation("right", [0, 1, 2, 3], Framerate)
   discard player.addAnimation("left", [0, 1, 2, 3], Framerate, Flip.horizontal)
   discard player.addAnimation("death", [4, 5, 6, 7], Framerate)
+
+  player.collider = newCircleCollider(
+    player, (PlayerRadius, PlayerRadius), PlayerRadius)
 
 
 proc newPlayer*(graphic: TextureGraphic, level: Level): Player =
