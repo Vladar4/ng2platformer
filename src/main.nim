@@ -5,6 +5,7 @@ import
     font,
     gui/button,
     gui/widget,
+    input,
     nimgame,
     scene,
     settings,
@@ -48,7 +49,7 @@ proc init*(scene: MainScene) =
   scene.add scene.player
 
   scene.cameraBond = scene.player # bind camera to the player entity
-  scene.player.updateVisibility()
+  #scene.player.updateVisibility()
 
 
 
@@ -67,4 +68,10 @@ method event*(scene: MainScene, event: Event) =
     of K_F10:
       colliderOutline = not colliderOutline
     else: discard
+
+
+method update*(scene: MainScene, elapsed: float) =
+  scene.updateScene elapsed
+  if ScancodeSpace.down:
+    scene.player.jump(elapsed)
 

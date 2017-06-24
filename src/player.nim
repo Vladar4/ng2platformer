@@ -41,8 +41,27 @@ proc init*(player: Player, graphic: TextureGraphic, level: Level) =
   player.collider = newCircleCollider(
     player, (PlayerRadius, PlayerRadius), PlayerRadius)
 
+  player.physics = new Physics
+
 
 proc newPlayer*(graphic: TextureGraphic, level: Level): Player =
   new result
   result.init(graphic, level)
+
+
+proc jump*(player: Player, elapsed: float) =
+  discard
+
+
+method update*(player: Player, elapsed: float) =
+  player.updateEntity elapsed
+
+
+proc updatePhysics(player: Player, elapsed: float) =
+  discard
+  # physics here
+
+
+method update*(physics: Physics, player: Player, elapsed: float) =
+  player.updatePhysics elapsed
 
