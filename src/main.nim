@@ -43,6 +43,7 @@ proc init*(scene: MainScene) =
   scene.add scene.level
 
   scene.player = newPlayer(gfxData["player"], scene.level)
+  scene.player.collisionEnvironment = @[Entity(scene.level)]
   scene.player.layer = PlayerLayer
   scene.player.pos =
     scene.level.tilePos scene.level.firstTileIndex(MapPlayerSpawn) # positioning
@@ -72,6 +73,10 @@ method event*(scene: MainScene, event: Event) =
 
 method update*(scene: MainScene, elapsed: float) =
   scene.updateScene elapsed
-  if ScancodeSpace.down:
+  if ScancodeSpace.pressed:
     scene.player.jump(elapsed)
+  if ScancodeRight.down:
+    scene.player.right(elapsed)
+  if ScancodeLeft.down:
+    scene.player.left(elapsed)
 

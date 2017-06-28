@@ -5,6 +5,7 @@ import
     entity,
     texturegraphic,
     tilemap,
+    types,
     utils,
   ],
   data

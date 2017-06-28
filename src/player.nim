@@ -12,8 +12,13 @@ import
 const
   PlayerRadius = 16
   PlayerSize = PlayerRadius * 2
+  ColliderRadius = PlayerRadius - 1
   Framerate = 1/12
   VisibilityDim: Dim = (w: 9, h: 6)
+  GravAcc = 1000
+  Drag = 800
+  JumpVel = 450
+  WalkVel = 10
 
 
 type
@@ -39,9 +44,11 @@ proc init*(player: Player, graphic: TextureGraphic, level: Level) =
   discard player.addAnimation("death", [4, 5, 6, 7], Framerate)
 
   player.collider = newCircleCollider(
-    player, (PlayerRadius, PlayerRadius), PlayerRadius)
+    player, (PlayerRadius, PlayerRadius), ColliderRadius)
 
-  player.physics = new Physics
+  player.acc.y = GravAcc
+  player.drg.x = Drag
+  player.physics = platformerPhysics
 
 
 proc newPlayer*(graphic: TextureGraphic, level: Level): Player =
@@ -50,18 +57,22 @@ proc newPlayer*(graphic: TextureGraphic, level: Level): Player =
 
 
 proc jump*(player: Player, elapsed: float) =
-  discard
+  if player.vel.y == 0.0:
+    player.vel.y -= JumpVel
+
+
+proc right*(player: Player, elapsed: float) =
+  player.vel.x += WalkVel
+  if not player.sprite.playing and player.vel.y == 0.0:
+    player.play("right", 1)
+
+
+proc left*(player: Player, elapsed: float) =
+  player.vel.x -= WalkVel
+  if not player.sprite.playing and player.vel.y == 0.0:
+    player.play("left", 1)
 
 
 method update*(player: Player, elapsed: float) =
   player.updateEntity elapsed
-
-
-proc updatePhysics(player: Player, elapsed: float) =
-  discard
-  # physics here
-
-
-method update*(physics: Physics, player: Player, elapsed: float) =
-  player.updatePhysics elapsed
 
