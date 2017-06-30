@@ -50,8 +50,7 @@ proc init*(scene: MainScene) =
   scene.add scene.player
 
   scene.cameraBond = scene.player # bind camera to the player entity
-  #scene.player.updateVisibility()
-
+  scene.player.updateVisibility()
 
 
 proc free*(scene: MainScene) =
@@ -68,6 +67,8 @@ method event*(scene: MainScene, event: Event) =
     case event.key.keysym.sym:
     of K_F10:
       colliderOutline = not colliderOutline
+    of K_F11:
+      showInfo = not showInfo
     else: discard
 
 
