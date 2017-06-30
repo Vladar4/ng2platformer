@@ -74,3 +74,13 @@ proc newTitleScene*(): TitleScene =
   new result, free
   init result
 
+
+method event*(scene: TitleScene, event: Event) =
+  scene.eventScene event
+  if event.kind == KeyDown:
+    case event.key.keysym.sym:
+    of K_Space, K_Return:
+      game.scene = mainScene # quick start
+    else:
+      discard
+
