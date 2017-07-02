@@ -21,32 +21,48 @@ import
 const
   LevelLayer = 0
   PlayerLayer = 10
-
-  MapPlayerSpawn = 8  # player spawn selector tile index
+  Spikes = 4
 
 
 type
   MainScene = ref object of Scene
     level: Level
+    spikes: seq[Entity]
     player: Player
 
 
 proc init*(scene: MainScene) =
   init Scene scene
 
+  # Camera
   scene.camera = newEntity()
   scene.cameraBondOffset = game.size / 2  # set camera to the center
 
+  # Level
   scene.level = newLevel gfxData["tiles"]
   scene.level.load "data/csv/map1.csv"
   scene.level.layer = LevelLayer
   scene.add scene.level
 
+  # Spikes
+  scene.spikes = @[]
+  const
+    SpikesOrigin = TileDim / 2 + (0, TileDim[1] div 4)
+    SpikesDim = TileDim / (1, 2)
+  for tileCoord in scene.level.tileIndex(Spikes):
+    let e = newEntity()
+    e.tags.add "spikes"
+    e.pos = scene.level.tilePos(tileCoord)
+    e.collider = newBoxCollider(e, SpikesOrigin, SpikesDim)
+    e.collider.tags.add "player"
+    scene.spikes.add e
+    scene.add e
+
+  # Player
   scene.player = newPlayer(gfxData["player"], scene.level)
   scene.player.collisionEnvironment = @[Entity(scene.level)]
   scene.player.layer = PlayerLayer
-  scene.player.pos =
-    scene.level.tilePos scene.level.firstTileIndex(MapPlayerSpawn) # positioning
+  scene.player.resetPosition()
   scene.add scene.player
 
   scene.cameraBond = scene.player # bind camera to the player entity
@@ -76,9 +92,9 @@ method event*(scene: MainScene, event: Event) =
 method update*(scene: MainScene, elapsed: float) =
   scene.updateScene elapsed
   if ScancodeSpace.pressed:
-    scene.player.jump(elapsed)
+    scene.player.jump()
   if ScancodeRight.down:
-    scene.player.right(elapsed)
+    scene.player.right()
   if ScancodeLeft.down:
-    scene.player.left(elapsed)
+    scene.player.left()
 

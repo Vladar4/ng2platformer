@@ -12,6 +12,7 @@ import
 const
   Framerate = 1/12
   VisibilityDim: Dim = (w: 10, h: 6)
+  Spawn = 8 # player spawn selector tile index
   PlayerRadius = 16
   PlayerSize = PlayerRadius * 2
   ColliderRadius = PlayerRadius - 1
@@ -24,6 +25,7 @@ const
 type
   Player* = ref object of Entity
     level*: Level
+    dying: bool
 
 
 proc updateVisibility*(player: Player) =
@@ -35,8 +37,14 @@ proc updateVisibility*(player: Player) =
     y: (center.y - VisibilityDim.h)..(center.y + VisibilityDim.h))
 
 
+proc resetPosition*(player: Player) =
+  # reset player position to a given tile
+  player.pos = player.level.tilePos player.level.firstTileIndex(Spawn)
+
+
 proc init*(player: Player, graphic: TextureGraphic, level: Level) =
   player.initEntity()
+  player.tags.add "player"
   player.level = level
   player.graphic = graphic
   player.initSprite((PlayerSize, PlayerSize))
@@ -69,24 +77,46 @@ proc newPlayer*(graphic: TextureGraphic, level: Level): Player =
   result.init(graphic, level)
 
 
-proc jump*(player: Player, elapsed: float) =
+proc jump*(player: Player) =
   if player.vel.y == 0.0:
     player.vel.y -= JumpVel
 
 
-proc right*(player: Player, elapsed: float) =
+proc right*(player: Player) =
   player.vel.x += WalkVel
   if not player.sprite.playing and player.vel.y == 0.0:
     player.play("right", 1)
 
 
-proc left*(player: Player, elapsed: float) =
+proc left*(player: Player) =
   player.vel.x -= WalkVel
   if not player.sprite.playing and player.vel.y == 0.0:
     player.play("left", 1)
 
 
+proc die*(player: Player) =
+  if not player.dying:
+    player.dying = true
+    player.play("death", 3)
+    player.vel.y = -JumpVel
+
+
 method update*(player: Player, elapsed: float) =
   player.updateEntity elapsed
   player.updateVisibility()
+
+  if player.dying:
+    if not player.sprite.playing:
+      # reset
+      player.play("right", 0)
+      player.resetPosition()
+      player.updateVisibility()
+      player.dying = false
+    else:
+      return
+
+
+method onCollide*(player: Player, target: Entity) =
+  if "spikes" in target.tags:
+    player.die()
 
