@@ -127,7 +127,7 @@ method onCollide*(player: Player, target: Entity) =
   if "box" in target.tags:
     let index = player.level.tileIndex(target.pos)
     player.level.tile(index) += 1 # red box -> grey box
-    player.requestCoins.add index + (0, -1)
+    player.requestCoins.add index + (0, -1) # request coin spawn one tile higher
     target.dead = true
 
   if "coin" in target.tags:

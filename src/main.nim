@@ -23,12 +23,27 @@ const
   PlayerLayer = 10
   Spikes = 4  # Spikes tile index
   Box = 6     # Box tile index
+  CoinA = 2
+  CoinB = 3
 
 
 type
   MainScene = ref object of Scene
     level: Level
     player: Player
+
+
+proc spawnCoin*(scene: MainScene, index: CoordInt) =
+  let e = newEntity()
+  e.tags.add "coin"
+  e.graphic = gfxData["tiles"]
+  e.initSprite(TileDim)
+  discard e.addAnimation("rotate", [2, 3], 1/8)
+  e.play("rotate", -1)
+  e.pos = scene.level.tilePos index
+  e.collider = newCircleCollider(e, TileDim / 2 - 1, TileDim[0] / 2 - 1)
+  e.collider.tags.add "player"
+  scene.add e
 
 
 proc init*(scene: MainScene) =
@@ -67,6 +82,12 @@ proc init*(scene: MainScene) =
     e.collider = newLineCollider(e, BoxPos1, BoxPos2)
     e.collider.tags.add "player" # collide only with player entity
     scene.add e
+
+  # Coins
+  for value in [CoinA, CoinB]:
+    for tileCoord in scene.level.tileIndex(value):
+      scene.level.tile(tileCoord) = 0
+      scene.spawnCoin(tileCoord)
 
 
   # Player
@@ -111,14 +132,5 @@ method update*(scene: MainScene, elapsed: float) =
 
   # Spawn coins
   while scene.player.requestCoins.len > 0:
-    let e = newEntity()
-    e.tags.add "coin"
-    e.graphic = gfxData["tiles"]
-    e.initSprite(TileDim)
-    discard e.addAnimation("rotate", [2, 3], 1/8)
-    e.play("rotate", -1)
-    e.pos = scene.level.tilePos scene.player.requestCoins.pop()
-    e.collider = newCircleCollider(e, TileDim / 2 - 1, TileDim[0] / 2 - 1)
-    e.collider.tags.add "player"
-    scene.add e
+    scene.spawnCoin scene.player.requestCoins.pop()
 
