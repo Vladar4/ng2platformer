@@ -82,17 +82,20 @@ proc newPlayer*(graphic: TextureGraphic, level: Level): Player =
 
 
 proc jump*(player: Player) =
+  if player.dying: return
   if player.vel.y == 0.0:
     player.vel.y -= JumpVel
 
 
 proc right*(player: Player) =
+  if player.dying: return
   player.vel.x += WalkVel
   if not player.sprite.playing and player.vel.y == 0.0:
     player.play("right", 1)
 
 
 proc left*(player: Player) =
+  if player.dying: return
   player.vel.x -= WalkVel
   if not player.sprite.playing and player.vel.y == 0.0:
     player.play("left", 1)

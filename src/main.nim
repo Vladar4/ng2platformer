@@ -23,8 +23,8 @@ const
   PlayerLayer = 10
   Spikes = 4  # Spikes tile index
   Box = 6     # Box tile index
-  CoinA = 2
-  CoinB = 3
+  CoinA = 2   # Coin tile index (frame A)
+  CoinB = 3   # Coin tile index (frame B)
 
 
 type
@@ -39,7 +39,7 @@ proc spawnCoin*(scene: MainScene, index: CoordInt) =
   e.graphic = gfxData["tiles"]
   e.initSprite(TileDim)
   discard e.addAnimation("rotate", [2, 3], 1/8)
-  e.play("rotate", -1)
+  e.play("rotate", -1) # continuous animation
   e.pos = scene.level.tilePos index
   e.collider = newCircleCollider(e, TileDim / 2 - 1, TileDim[0] / 2 - 1)
   e.collider.tags.add "player"
