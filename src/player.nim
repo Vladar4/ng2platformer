@@ -6,6 +6,7 @@ import
     tilemap,
     types,
   ],
+  data,
   level
 
 
@@ -26,6 +27,7 @@ type
   Player* = ref object of Entity
     level*: Level
     dying: bool
+    requestCoins*: seq[CoordInt]
 
 
 proc updateVisibility*(player: Player) =
@@ -70,6 +72,8 @@ proc init*(player: Player, graphic: TextureGraphic, level: Level) =
   player.acc.y = GravAcc
   player.drg.x = Drag
   player.physics = platformerPhysics
+
+  player.requestCoins = @[]
 
 
 proc newPlayer*(graphic: TextureGraphic, level: Level): Player =
@@ -119,4 +123,14 @@ method update*(player: Player, elapsed: float) =
 method onCollide*(player: Player, target: Entity) =
   if "spikes" in target.tags:
     player.die()
+
+  if "box" in target.tags:
+    let index = player.level.tileIndex(target.pos)
+    player.level.tile(index) += 1 # red box -> grey box
+    player.requestCoins.add index + (0, -1)
+    target.dead = true
+
+  if "coin" in target.tags:
+    inc score
+    target.dead = true
 

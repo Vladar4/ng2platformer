@@ -21,13 +21,13 @@ import
 const
   LevelLayer = 0
   PlayerLayer = 10
-  Spikes = 4
+  Spikes = 4  # Spikes tile index
+  Box = 6     # Box tile index
 
 
 type
   MainScene = ref object of Scene
     level: Level
-    spikes: seq[Entity]
     player: Player
 
 
@@ -45,7 +45,6 @@ proc init*(scene: MainScene) =
   scene.add scene.level
 
   # Spikes
-  scene.spikes = @[]
   const
     SpikesOrigin = TileDim / 2 + (0, TileDim[1] div 4)
     SpikesDim = TileDim / (1, 2)
@@ -54,9 +53,21 @@ proc init*(scene: MainScene) =
     e.tags.add "spikes"
     e.pos = scene.level.tilePos(tileCoord)
     e.collider = newBoxCollider(e, SpikesOrigin, SpikesDim)
-    e.collider.tags.add "player"
-    scene.spikes.add e
+    e.collider.tags.add "player" # collide only with player entity
     scene.add e
+
+  # Boxes
+  const
+    BoxPos1 = (2, TileDim[1] + 2)
+    BoxPos2 = (TileDim[0] - 2, TileDim[1] + 2)
+  for tileCoord in scene.level.tileIndex(Box):
+    let e = newEntity()
+    e.tags.add "box"
+    e.pos = scene.level.tilePos(tileCoord)
+    e.collider = newLineCollider(e, BoxPos1, BoxPos2)
+    e.collider.tags.add "player" # collide only with player entity
+    scene.add e
+
 
   # Player
   scene.player = newPlayer(gfxData["player"], scene.level)
@@ -97,4 +108,17 @@ method update*(scene: MainScene, elapsed: float) =
     scene.player.right()
   if ScancodeLeft.down:
     scene.player.left()
+
+  # Spawn coins
+  while scene.player.requestCoins.len > 0:
+    let e = newEntity()
+    e.tags.add "coin"
+    e.graphic = gfxData["tiles"]
+    e.initSprite(TileDim)
+    discard e.addAnimation("rotate", [2, 3], 1/8)
+    e.play("rotate", -1)
+    e.pos = scene.level.tilePos scene.player.requestCoins.pop()
+    e.collider = newCircleCollider(e, TileDim / 2 - 1, TileDim[0] / 2 - 1)
+    e.collider.tags.add "player"
+    scene.add e
 
