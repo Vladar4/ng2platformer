@@ -14,6 +14,7 @@ import
     types,
   ],
   data,
+  enemy,
   level,
   player
 
@@ -25,6 +26,7 @@ const
   Box = 6     # Box tile index
   CoinA = 2   # Coin tile index (frame A)
   CoinB = 3   # Coin tile index (frame B)
+  EnemySpawn = 9  # Enemy spawn tile index
 
 
 type
@@ -89,6 +91,12 @@ proc init*(scene: MainScene) =
       scene.level.tile(tileCoord) = 0
       scene.spawnCoin(tileCoord)
 
+  # Enemy
+  for tileCoord in scene.level.tileIndex(EnemySpawn):
+    let e = newEnemy(gfxData["enemy"], scene.level)
+    e.collisionEnvironment = @[Entity(scene.level)]
+    e.pos = scene.level.tilePos(tileCoord) + TileDim[1] / 2
+    scene.add e
 
   # Player
   scene.player = newPlayer(gfxData["player"], scene.level)
@@ -98,7 +106,6 @@ proc init*(scene: MainScene) =
   scene.add scene.player
 
   scene.cameraBond = scene.player # bind camera to the player entity
-  scene.player.updateVisibility()
 
 
 proc free*(scene: MainScene) =

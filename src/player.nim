@@ -12,7 +12,6 @@ import
 
 const
   Framerate = 1/12
-  VisibilityDim: Dim = (w: 10, h: 6)
   Spawn = 8 # player spawn selector tile index
   PlayerRadius = 16
   PlayerSize = PlayerRadius * 2
@@ -28,15 +27,6 @@ type
     level*: Level
     dying: bool
     requestCoins*: seq[CoordInt]
-
-
-proc updateVisibility*(player: Player) =
-  # update the visible portion of the map
-  let
-    center = player.level.tileIndex(player.pos)
-  player.level.show = (
-    x: (center.x - VisibilityDim.w)..(center.x + VisibilityDim.w),
-    y: (center.y - VisibilityDim.h)..(center.y + VisibilityDim.h))
 
 
 proc resetPosition*(player: Player) =
@@ -110,21 +100,19 @@ proc die*(player: Player) =
 
 method update*(player: Player, elapsed: float) =
   player.updateEntity elapsed
-  player.updateVisibility()
 
   if player.dying:
     if not player.sprite.playing:
       # reset
       player.play("right", 0)
       player.resetPosition()
-      player.updateVisibility()
       player.dying = false
     else:
       return
 
 
 method onCollide*(player: Player, target: Entity) =
-  if "spikes" in target.tags:
+  if "spikes" in target.tags or "enemy" in target.tags:
     player.die()
 
   if "box" in target.tags:
