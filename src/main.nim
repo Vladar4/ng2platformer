@@ -106,6 +106,7 @@ proc init*(scene: MainScene) =
   scene.add scene.player
 
   scene.cameraBond = scene.player # bind camera to the player entity
+  scene.player.updateVisibility()
 
 
 proc free*(scene: MainScene) =

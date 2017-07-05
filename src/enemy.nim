@@ -55,3 +55,12 @@ proc newEnemy*(graphic: TextureGraphic, level: Level): Enemy =
   new result
   result.init(graphic, level)
 
+
+method update*(enemy: Enemy, elapsed: float) =
+  # updateEntity override
+  enemy.logic(enemy, elapsed)
+  let index = enemy.level.tileIndex(enemy.pos)
+  # check collisions only if visible
+  if index.x in enemy.level.show.x and index.y in enemy.level.show.y:
+    enemy.physics(enemy, elapsed)
+
