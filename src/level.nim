@@ -38,7 +38,7 @@ proc load*(level: Level, csv: string) =
 
   level.hidden.add @[8, 9, 10, 11]  # tiles on a third row are invisible markers
   level.passable.add @[0, 2, 3, 4, 8, 9, 10, 11] # tiles without colliders
-  level.onlyReachableColliders = true
+  level.onlyReachableColliders = true # do not init unreachable colliders
   level.initCollider()
   level.collider.tags.add "nil" # do not check for collisions
 
