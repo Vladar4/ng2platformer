@@ -12,7 +12,7 @@ import
 
 const
   Framerate = 1/12
-  VisibilityDim: Dim = (w: 14, h: 10)
+  VisibilityDim: Dim = (w: 12, h: 10)
   Spawn = 8 # player spawn selector tile index
   PlayerRadius = 16
   PlayerSize = PlayerRadius * 2

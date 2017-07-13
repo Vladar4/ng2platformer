@@ -78,9 +78,13 @@ proc newEnemy*(graphic: TextureGraphic, level: Level): Enemy =
 
 method update*(enemy: Enemy, elapsed: float) =
   # updateEntity override
-  let index = enemy.level.tileIndex(enemy.pos)
   # physics and logic only if visible
-  if index.x in enemy.level.show.x and index.y in enemy.level.show.y:
+  let
+    index = enemy.level.tileIndex(enemy.pos)
+    rangeX = (enemy.level.show.x.a + 1)..(enemy.level.show.x.b - 1)
+    rangeY = (enemy.level.show.y.a + 1)..(enemy.level.show.y.b - 1)
+  # ranges are reduced by 1 to prevent falling through out of range tiles
+  if (index.x in rangeX) and (index.y in rangeY):
     enemy.logic(enemy, elapsed)
     enemy.physics(enemy, elapsed)
 
