@@ -134,9 +134,9 @@ method update*(scene: MainScene, elapsed: float) =
   if ScancodeSpace.pressed:
     scene.player.jump()
   if ScancodeRight.down:
-    scene.player.right()
+    scene.player.right(elapsed)
   if ScancodeLeft.down:
-    scene.player.left()
+    scene.player.left(elapsed)
 
   # Spawn coins
   while scene.player.requestCoins.len > 0:

@@ -18,9 +18,10 @@ const
   PlayerSize = PlayerRadius * 2
   ColliderRadius = PlayerRadius - 1
   GravAcc = 1000
-  Drag = 800
+  Drag = 400
   JumpVel = 450
-  WalkVel = 10
+  WalkVel = 750
+  MaxVel = 350
 
 
 type
@@ -87,16 +88,20 @@ proc jump*(player: Player) =
     player.vel.y -= JumpVel
 
 
-proc right*(player: Player) =
+proc right*(player: Player, elapsed: float) =
   if player.dying: return
-  player.vel.x += WalkVel
+  player.vel.x += WalkVel * elapsed
+  if player.vel.x > MaxVel:
+    player.vel.x = MaxVel
   if not player.sprite.playing and player.vel.y == 0.0:
     player.play("right", 1)
 
 
-proc left*(player: Player) =
+proc left*(player: Player, elapsed: float) =
   if player.dying: return
-  player.vel.x -= WalkVel
+  player.vel.x -= WalkVel * elapsed
+  if player.vel.x < -MaxVel:
+    player.vel.x = -MaxVel
   if not player.sprite.playing and player.vel.y == 0.0:
     player.play("left", 1)
 
