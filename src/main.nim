@@ -3,6 +3,7 @@ import
     assets,
     entity,
     font,
+    graphic,
     gui/button,
     gui/widget,
     input,
@@ -22,17 +23,20 @@ import
 const
   LevelLayer = 0
   PlayerLayer = 10
+  UILayer = 20
   Spikes = 4  # Spikes tile index
   Box = 6     # Box tile index
   CoinA = 2   # Coin tile index (frame A)
   CoinB = 3   # Coin tile index (frame B)
   EnemySpawn = 9  # Enemy spawn tile index
+  Finish = 11     # Finish tile index
 
 
 type
   MainScene = ref object of Scene
     level: Level
     player: Player
+    victory: Entity
 
 
 proc spawnCoin*(scene: MainScene, index: CoordInt) =
@@ -45,6 +49,7 @@ proc spawnCoin*(scene: MainScene, index: CoordInt) =
   e.pos = scene.level.tilePos index
   e.collider = newCircleCollider(e, TileDim / 2 - 1, TileDim[0] / 2 - 1)
   e.collider.tags.add "player"
+  e.parent = scene.camera
   scene.add e
 
 
@@ -53,12 +58,14 @@ proc init*(scene: MainScene) =
 
   # Camera
   scene.camera = newEntity()
+  scene.camera.tags.add "camera"
   scene.cameraBondOffset = game.size / 2  # set camera to the center
 
   # Level
   scene.level = newLevel gfxData["tiles"]
   scene.level.load "data/csv/map1.csv"
   scene.level.layer = LevelLayer
+  scene.level.parent = scene.camera
   scene.add scene.level
 
   # Spikes
@@ -71,6 +78,7 @@ proc init*(scene: MainScene) =
     e.pos = scene.level.tilePos(tileCoord)
     e.collider = newBoxCollider(e, SpikesOrigin, SpikesDim)
     e.collider.tags.add "player" # collide only with player entity
+    e.parent = scene.camera
     scene.add e
 
   # Boxes
@@ -83,6 +91,7 @@ proc init*(scene: MainScene) =
     e.pos = scene.level.tilePos(tileCoord)
     e.collider = newLineCollider(e, BoxPos1, BoxPos2)
     e.collider.tags.add "player" # collide only with player entity
+    e.parent = scene.camera
     scene.add e
 
   # Coins
@@ -96,13 +105,36 @@ proc init*(scene: MainScene) =
     let e = newEnemy(gfxData["enemy"], scene.level)
     e.collisionEnvironment = @[Entity(scene.level)]
     e.pos = scene.level.tilePos(tileCoord) + TileDim[1] / 2
+    e.parent = scene.camera
     scene.add e
+
+  # Finish
+  let
+    finishIdx = scene.level.firstTileIndex(Finish)
+    f = newEntity()
+  f.tags.add "finish"
+  f.collider = newCircleCollider(f, TileDim / 2, TileDim[0] / 2 - 1)
+  f.pos = scene.level.tilePos(finishIdx)
+  f.parent = scene.camera
+  scene.add f
+
+  # Victory
+  let victoryText = newTextGraphic bigFont
+  victoryText.setText "VICTORY!"
+  scene.victory = newEntity()
+  scene.victory.graphic = victoryText
+  scene.victory.centrify(ver = VAlign.top)
+  scene.victory.visible = false
+  scene.victory.layer = UILayer
+  scene.victory.pos = (GameWidth / 2, 0.0)
+  scene.add scene.victory
 
   # Player
   scene.player = newPlayer(gfxData["player"], scene.level)
   scene.player.collisionEnvironment = @[Entity(scene.level)]
   scene.player.layer = PlayerLayer
   scene.player.resetPosition()
+  scene.player.parent = scene.camera
   scene.add scene.player
 
   scene.cameraBond = scene.player # bind camera to the player entity
@@ -141,4 +173,8 @@ method update*(scene: MainScene, elapsed: float) =
   # Spawn coins
   while scene.player.requestCoins.len > 0:
     scene.spawnCoin scene.player.requestCoins.pop()
+
+  # Check for victory
+  if scene.player.won:
+    scene.victory.visible = true
 

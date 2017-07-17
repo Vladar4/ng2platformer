@@ -28,6 +28,7 @@ type
   Player* = ref object of Entity
     level*: Level
     dying: bool
+    won*: bool
     requestCoins*: seq[CoordInt]
 
 
@@ -141,4 +142,7 @@ method onCollide*(player: Player, target: Entity) =
   if "coin" in target.tags:
     inc score
     target.dead = true
+
+  if "finish" in target.tags:
+    player.won = true
 
