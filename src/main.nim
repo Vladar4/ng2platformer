@@ -36,6 +36,7 @@ type
   MainScene = ref object of Scene
     level: Level
     player: Player
+    score: TextGraphic
     victory: Entity
 
 
@@ -118,6 +119,15 @@ proc init*(scene: MainScene) =
   f.parent = scene.camera
   scene.add f
 
+  # Score
+  let score = newEntity()
+  scene.score = newTextGraphic defaultFont
+  scene.score.setText "SCORE: 0"
+  score.graphic = scene.score
+  score.layer = UILayer
+  score.pos = (12, 8)
+  scene.add score
+
   # Victory
   let victoryText = newTextGraphic bigFont
   victoryText.setText "VICTORY!"
@@ -173,6 +183,9 @@ method update*(scene: MainScene, elapsed: float) =
   # Spawn coins
   while scene.player.requestCoins.len > 0:
     scene.spawnCoin scene.player.requestCoins.pop()
+
+  # Update score
+  scene.score.setText "SCORE: " & $score
 
   # Check for victory
   if scene.player.won:
