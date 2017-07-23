@@ -1,5 +1,6 @@
 import
   nimgame2 / [
+    audio,
     nimgame,
     settings,
     types,
@@ -18,6 +19,7 @@ if game.init(GameWidth, GameHeight, title = GameTitle, integerScale = true):
   game.windowSize = (GameWidth * 2, GameHeight * 2) # Doulbe scaling (1280x720)
   game.centrify() # Place window at the center of the screen
   background = 0x151B8D'u32
+  setSoundVolume Volume.high div 2 # set sound volume to a 50%
 
   loadData() # Call it before any scene initialization
 

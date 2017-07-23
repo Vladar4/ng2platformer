@@ -1,5 +1,7 @@
 import
   nimgame2 / [
+    assets,
+    audio,
     collider,
     entity,
     texturegraphic,
@@ -87,6 +89,7 @@ proc jump*(player: Player) =
   if player.dying: return
   if player.vel.y == 0.0:
     player.vel.y -= JumpVel
+    discard sfxData["jump"].play()
 
 
 proc right*(player: Player, elapsed: float) =
@@ -112,6 +115,7 @@ proc die*(player: Player) =
     player.dying = true
     player.play("death", 3)
     player.vel.y = -JumpVel
+    discard sfxData["death"].play()
 
 
 method update*(player: Player, elapsed: float) =
@@ -138,11 +142,15 @@ method onCollide*(player: Player, target: Entity) =
     player.level.tile(index) += 1 # red box -> grey box
     player.requestCoins.add index + (0, -1) # request coin spawn one tile higher
     target.dead = true
+    discard sfxData["box"].play()
 
   if "coin" in target.tags:
     inc score
     target.dead = true
+    discard sfxData["pickup"].play()
 
   if "finish" in target.tags:
+    if not player.won:
+      discard sfxData["victory"].play()
     player.won = true
 
