@@ -5,6 +5,7 @@ import
     font,
     gui/button,
     gui/widget,
+    input,
     mosaic,
     nimgame,
     scene,
@@ -73,6 +74,10 @@ proc free*(scene: TitleScene) =
 proc newTitleScene*(): TitleScene =
   new result, free
   init result
+
+
+method show*(scene: TitleScene) =
+  showCursor()
 
 
 method event*(scene: TitleScene, event: Event) =

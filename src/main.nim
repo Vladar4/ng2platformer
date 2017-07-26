@@ -160,6 +160,10 @@ proc newMainScene*(): MainScene =
   init result
 
 
+method show*(scene: MainScene) =
+  hideCursor()
+
+
 method event*(scene: MainScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
