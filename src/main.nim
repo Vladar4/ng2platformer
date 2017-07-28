@@ -64,7 +64,7 @@ proc init*(scene: MainScene) =
 
   # Level
   scene.level = newLevel gfxData["tiles"]
-  scene.level.load "data/csv/map1.csv"
+  if scene.level.map.len == 0: scene.level.load "data/csv/map1.csv"
   scene.level.layer = LevelLayer
   scene.level.parent = scene.camera
   scene.add scene.level
@@ -157,11 +157,11 @@ proc free*(scene: MainScene) =
 
 proc newMainScene*(): MainScene =
   new result, free
-  init result
 
 
 method show*(scene: MainScene) =
   hideCursor()
+  init scene
 
 
 method event*(scene: MainScene, event: Event) =
@@ -172,6 +172,8 @@ method event*(scene: MainScene, event: Event) =
       colliderOutline = not colliderOutline
     of K_F11:
       showInfo = not showInfo
+    of K_Escape:
+      game.scene = titleScene
     else: discard
 
 
